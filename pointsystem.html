@@ -1,0 +1,2498 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LifeQuest — Personal Point System</title>
+
+<style>
+:root{
+    --bg:#070b14;
+    --panel:#0e1525;
+    --panel2:#121b2e;
+    --border:#23304a;
+    --text:#eef4ff;
+    --muted:#8290aa;
+    --primary:#7c5cff;
+    --primary2:#5ee7ff;
+    --green:#35e39a;
+    --yellow:#ffc857;
+    --red:#ff5577;
+    --shadow:0 20px 60px rgba(0,0,0,.35);
+}
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+    background:
+        radial-gradient(circle at 10% 10%,rgba(124,92,255,.12),transparent 30%),
+        radial-gradient(circle at 90% 20%,rgba(94,231,255,.08),transparent 25%),
+        var(--bg);
+    color:var(--text);
+    min-height:100vh;
+}
+
+button,
+input,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.app{
+    display:flex;
+    min-height:100vh;
+}
+
+/* SIDEBAR */
+
+.sidebar{
+    width:260px;
+    background:rgba(10,15,27,.92);
+    border-right:1px solid var(--border);
+    padding:24px 16px;
+    position:fixed;
+    left:0;
+    top:0;
+    bottom:0;
+    z-index:20;
+    backdrop-filter:blur(20px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:35px;
+    padding:0 10px;
+}
+
+.logoIcon{
+    width:42px;
+    height:42px;
+    border-radius:13px;
+    display:grid;
+    place-items:center;
+    background:linear-gradient(135deg,var(--primary),var(--primary2));
+    font-size:21px;
+    box-shadow:0 0 25px rgba(124,92,255,.35);
+}
+
+.logoText{
+    font-weight:900;
+    font-size:19px;
+}
+
+.logoText span{
+    color:var(--primary2);
+}
+
+.nav{
+    display:flex;
+    flex-direction:column;
+    gap:7px;
+}
+
+.nav button{
+    border:0;
+    color:var(--muted);
+    background:transparent;
+    padding:13px 14px;
+    border-radius:12px;
+    text-align:left;
+    transition:.2s;
+}
+
+.nav button:hover,
+.nav button.active{
+    background:rgba(124,92,255,.12);
+    color:white;
+}
+
+.nav button.active{
+    box-shadow:inset 3px 0 var(--primary);
+}
+
+.sidebarBottom{
+    position:absolute;
+    left:16px;
+    right:16px;
+    bottom:20px;
+}
+
+.smallCard{
+    background:var(--panel);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:14px;
+}
+
+.smallLabel{
+    color:var(--muted);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+}
+
+.smallValue{
+    font-size:24px;
+    font-weight:900;
+    margin-top:3px;
+}
+
+/* MAIN */
+
+.main{
+    margin-left:260px;
+    width:calc(100% - 260px);
+    padding:28px;
+}
+
+.topbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:28px;
+    gap:20px;
+}
+
+.pageTitle{
+    font-size:30px;
+    font-weight:900;
+}
+
+.pageSubtitle{
+    color:var(--muted);
+    margin-top:4px;
+}
+
+.dateBox{
+    color:var(--muted);
+    font-size:14px;
+    text-align:right;
+}
+
+/* DASHBOARD */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:16px;
+    margin-bottom:18px;
+}
+
+.stat{
+    background:linear-gradient(145deg,rgba(18,27,46,.95),rgba(12,18,31,.95));
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:20px;
+    box-shadow:var(--shadow);
+    position:relative;
+    overflow:hidden;
+}
+
+.stat:after{
+    content:"";
+    position:absolute;
+    width:100px;
+    height:100px;
+    right:-45px;
+    top:-45px;
+    background:var(--primary);
+    opacity:.08;
+    border-radius:50%;
+}
+
+.statLabel{
+    color:var(--muted);
+    font-size:12px;
+    text-transform:uppercase;
+    letter-spacing:.8px;
+}
+
+.statValue{
+    font-size:30px;
+    font-weight:900;
+    margin-top:8px;
+}
+
+.statChange{
+    margin-top:6px;
+    font-size:12px;
+    color:var(--green);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1.45fr .85fr;
+    gap:18px;
+}
+
+.panel{
+    background:rgba(14,21,37,.9);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:20px;
+    box-shadow:var(--shadow);
+}
+
+.panelHeader{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-bottom:17px;
+}
+
+.panelTitle{
+    font-size:18px;
+    font-weight:850;
+}
+
+.panelSub{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+/* PROGRESS */
+
+.progressContainer{
+    margin-top:18px;
+}
+
+.progressTop{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:7px;
+    font-size:12px;
+}
+
+.progressTrack{
+    height:10px;
+    background:#080d18;
+    border:1px solid var(--border);
+    border-radius:99px;
+    overflow:hidden;
+}
+
+.progressBar{
+    height:100%;
+    width:0%;
+    background:linear-gradient(90deg,var(--primary),var(--primary2));
+    border-radius:99px;
+    transition:.5s ease;
+}
+
+/* TASKS */
+
+.taskList{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.task{
+    display:flex;
+    align-items:center;
+    gap:13px;
+    padding:14px;
+    background:rgba(18,27,46,.65);
+    border:1px solid var(--border);
+    border-radius:14px;
+    transition:.2s;
+}
+
+.task:hover{
+    border-color:#344462;
+    transform:translateY(-1px);
+}
+
+.task.completed{
+    opacity:.55;
+}
+
+.task.completed .taskName{
+    text-decoration:line-through;
+}
+
+.check{
+    width:30px;
+    height:30px;
+    flex-shrink:0;
+    border-radius:9px;
+    border:1px solid #394965;
+    background:#0a101d;
+    color:white;
+    display:grid;
+    place-items:center;
+    transition:.2s;
+}
+
+.check:hover{
+    border-color:var(--green);
+}
+
+.task.completed .check{
+    background:var(--green);
+    border-color:var(--green);
+    color:#07130e;
+}
+
+.taskInfo{
+    flex:1;
+}
+
+.taskName{
+    font-weight:750;
+}
+
+.taskTime{
+    font-size:12px;
+    color:var(--muted);
+    margin-top:3px;
+}
+
+.reward{
+    font-size:12px;
+    color:var(--yellow);
+    font-weight:800;
+    white-space:nowrap;
+}
+
+.taskActions{
+    display:flex;
+    gap:5px;
+}
+
+/* BUTTONS */
+
+.btn{
+    border:1px solid var(--border);
+    background:#111a2c;
+    color:var(--text);
+    border-radius:10px;
+    padding:9px 13px;
+    transition:.2s;
+}
+
+.btn:hover{
+    border-color:#425274;
+    transform:translateY(-1px);
+}
+
+.btn.primary{
+    background:linear-gradient(135deg,var(--primary),#6245d7);
+    border-color:transparent;
+}
+
+.btn.green{
+    background:rgba(53,227,154,.1);
+    border-color:rgba(53,227,154,.3);
+    color:var(--green);
+}
+
+.btn.danger{
+    color:var(--red);
+}
+
+.btn.small{
+    padding:6px 9px;
+    font-size:12px;
+}
+
+/* SHOP */
+
+.shopGrid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+}
+
+.shopItem{
+    background:rgba(18,27,46,.65);
+    border:1px solid var(--border);
+    border-radius:15px;
+    padding:15px;
+}
+
+.shopIcon{
+    font-size:27px;
+    margin-bottom:8px;
+}
+
+.shopName{
+    font-weight:800;
+}
+
+.shopDescription{
+    color:var(--muted);
+    font-size:12px;
+    margin:4px 0 12px;
+    min-height:30px;
+}
+
+.shopBottom{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.price{
+    color:var(--yellow);
+    font-weight:900;
+}
+
+.buy{
+    border:0;
+    border-radius:9px;
+    padding:8px 11px;
+    background:var(--primary);
+    color:white;
+    font-weight:800;
+}
+
+.buy:disabled{
+    opacity:.35;
+    cursor:not-allowed;
+}
+
+/* SIDE QUESTS */
+
+.quest{
+    padding:15px;
+    border-radius:15px;
+    background:rgba(18,27,46,.65);
+    border:1px solid var(--border);
+    margin-bottom:10px;
+}
+
+.questTop{
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+.questIcon{
+    width:39px;
+    height:39px;
+    border-radius:11px;
+    display:grid;
+    place-items:center;
+    background:rgba(124,92,255,.13);
+}
+
+.questName{
+    font-weight:800;
+}
+
+.questDescription{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:7px;
+    line-height:1.5;
+}
+
+.questBottom{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:13px;
+}
+
+.questReward{
+    color:var(--yellow);
+    font-weight:900;
+}
+
+/* SECTIONS */
+
+.section{
+    display:none;
+}
+
+.section.active{
+    display:block;
+}
+
+/* MODAL */
+
+.modalBackdrop{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    backdrop-filter:blur(7px);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:20px;
+}
+
+.modalBackdrop.show{
+    display:flex;
+}
+
+.modal{
+    width:min(500px,100%);
+    background:#0d1525;
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 30px 100px rgba(0,0,0,.6);
+}
+
+.modalTitle{
+    font-size:20px;
+    font-weight:900;
+    margin-bottom:18px;
+}
+
+.form{
+    display:flex;
+    flex-direction:column;
+    gap:13px;
+}
+
+.field label{
+    display:block;
+    color:var(--muted);
+    font-size:12px;
+    margin-bottom:6px;
+}
+
+.field input,
+.field select{
+    width:100%;
+    border:1px solid var(--border);
+    background:#080e1a;
+    color:white;
+    padding:11px;
+    border-radius:10px;
+    outline:none;
+}
+
+.field input:focus,
+.field select:focus{
+    border-color:var(--primary);
+}
+
+.modalActions{
+    display:flex;
+    justify-content:flex-end;
+    gap:8px;
+    margin-top:18px;
+}
+
+/* TOAST */
+
+.toastContainer{
+    position:fixed;
+    right:20px;
+    bottom:20px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    z-index:500;
+}
+
+.toast{
+    min-width:250px;
+    max-width:350px;
+    padding:14px 16px;
+    border-radius:13px;
+    border:1px solid var(--border);
+    background:#10192b;
+    box-shadow:var(--shadow);
+    animation:toastIn .3s ease;
+}
+
+.toastTitle{
+    font-weight:850;
+}
+
+.toastText{
+    color:var(--muted);
+    font-size:12px;
+    margin-top:3px;
+}
+
+@keyframes toastIn{
+    from{
+        transform:translateY(15px);
+        opacity:0;
+    }
+    to{
+        transform:translateY(0);
+        opacity:1;
+    }
+}
+
+/* EMPTY */
+
+.empty{
+    text-align:center;
+    padding:30px 10px;
+    color:var(--muted);
+}
+
+/* MOBILE */
+
+.mobileHeader{
+    display:none;
+}
+
+@media(max-width:1050px){
+    .stats{
+        grid-template-columns:repeat(2,1fr);
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+
+@media(max-width:750px){
+    .sidebar{
+        display:none;
+    }
+
+    .main{
+        margin-left:0;
+        width:100%;
+        padding:18px;
+    }
+
+    .mobileHeader{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        margin-bottom:20px;
+    }
+
+    .topbar{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .dateBox{
+        text-align:left;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .shopGrid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+    <div class="logo">
+        <div class="logoIcon">⚡</div>
+        <div class="logoText">Life<span>Quest</span></div>
+    </div>
+
+    <nav class="nav">
+        <button class="active" onclick="showSection('dashboard',this)">📊 Dashboard</button>
+        <button onclick="showSection('schedule',this)">📅 Schedule</button>
+        <button onclick="showSection('shop',this)">🛒 Point Shop</button>
+        <button onclick="showSection('quests',this)">⚔️ Side Quests</button>
+        <button onclick="showSection('statsPage',this)">📈 Statistics</button>
+        <button onclick="showSection('settings',this)">⚙️ Settings</button>
+    </nav>
+
+    <div class="sidebarBottom">
+        <div class="smallCard">
+            <div class="smallLabel">Current Balance</div>
+            <div class="smallValue" id="sidePoints">0</div>
+            <div style="color:var(--yellow);font-size:12px;margin-top:3px;">⭐ points</div>
+        </div>
+    </div>
+
+</aside>
+
+<main class="main">
+
+<div class="mobileHeader">
+    <div class="logo">
+        <div class="logoIcon">⚡</div>
+        <div class="logoText">Life<span>Quest</span></div>
+    </div>
+</div>
+
+<!-- DASHBOARD -->
+<section id="dashboard" class="section active">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Good day, Quest Master 👋</div>
+            <div class="pageSubtitle">Complete your missions. Earn points. Spend them intentionally.</div>
+        </div>
+
+        <div class="dateBox" id="currentDate"></div>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="statLabel">Available Points</div>
+            <div class="statValue" id="points">0</div>
+            <div class="statChange">⭐ Spend or save</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Today's Progress</div>
+            <div class="statValue" id="progressText">0%</div>
+            <div class="statChange" id="taskCount">0 / 0 missions</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Current Streak</div>
+            <div class="statValue">🔥 <span id="streak">0</span></div>
+            <div class="statChange">Keep going</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Lifetime Earned</div>
+            <div class="statValue" id="lifetime">0</div>
+            <div class="statChange">Total points earned</div>
+        </div>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="panel">
+
+            <div class="panelHeader">
+                <div>
+                    <div class="panelTitle">Today's Missions</div>
+                    <div class="panelSub">Every completed schedule gives you 20 points.</div>
+                </div>
+
+                <button class="btn primary" onclick="openScheduleModal()">＋ Add</button>
+            </div>
+
+            <div id="dashboardTasks" class="taskList"></div>
+
+            <div class="progressContainer">
+                <div class="progressTop">
+                    <span>Daily completion</span>
+                    <span id="progressNumber">0 / 0</span>
+                </div>
+
+                <div class="progressTrack">
+                    <div class="progressBar" id="dailyProgress"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="panel">
+
+            <div class="panelHeader">
+                <div>
+                    <div class="panelTitle">Quick Rewards</div>
+                    <div class="panelSub">Things you can buy with earned points.</div>
+                </div>
+
+                <button class="btn small" onclick="showSection('shop')">Shop →</button>
+            </div>
+
+            <div id="quickShop"></div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule" class="section">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Daily Schedule</div>
+            <div class="pageSubtitle">Your recurring daily missions.</div>
+        </div>
+
+        <button class="btn primary" onclick="openScheduleModal()">＋ New Schedule</button>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div>
+                <div class="panelTitle">Today's Schedule</div>
+                <div class="panelSub">Each completion awards 20 points.</div>
+            </div>
+        </div>
+
+        <div id="fullSchedule" class="taskList"></div>
+    </div>
+
+</section>
+
+<!-- SHOP -->
+<section id="shop" class="section">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Point Shop 🛒</div>
+            <div class="pageSubtitle">Exchange your points for rewards you choose.</div>
+        </div>
+
+        <button class="btn primary" onclick="openShopModal()">＋ Add Reward</button>
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div>
+                <div class="panelTitle">Available Rewards</div>
+                <div class="panelSub">Your balance: <b id="shopBalance">0</b> ⭐</div>
+            </div>
+        </div>
+
+        <div id="shopGrid" class="shopGrid"></div>
+    </div>
+
+</section>
+
+<!-- QUESTS -->
+<section id="quests" class="section">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Side Quests ⚔️</div>
+            <div class="pageSubtitle">Optional challenges with custom rewards.</div>
+        </div>
+
+        <button class="btn primary" onclick="openQuestModal()">＋ Add Quest</button>
+    </div>
+
+    <div class="panel">
+
+        <div class="panelHeader">
+            <div>
+                <div class="panelTitle">Available Quests</div>
+                <div class="panelSub">Complete a side quest to claim its reward.</div>
+            </div>
+        </div>
+
+        <div id="questList"></div>
+
+    </div>
+
+</section>
+
+<!-- STATS -->
+<section id="statsPage" class="section">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Statistics 📈</div>
+            <div class="pageSubtitle">Track your consistency and point economy.</div>
+        </div>
+    </div>
+
+    <div class="stats">
+
+        <div class="stat">
+            <div class="statLabel">Total Earned</div>
+            <div class="statValue" id="statsEarned">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Total Spent</div>
+            <div class="statValue" id="statsSpent">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Tasks Completed</div>
+            <div class="statValue" id="statsTasks">0</div>
+        </div>
+
+        <div class="stat">
+            <div class="statLabel">Rewards Bought</div>
+            <div class="statValue" id="statsPurchases">0</div>
+        </div>
+
+    </div>
+
+    <div class="panel">
+        <div class="panelHeader">
+            <div>
+                <div class="panelTitle">Point Economy</div>
+                <div class="panelSub">Your lifetime point activity.</div>
+            </div>
+        </div>
+
+        <div class="progressContainer">
+
+            <div class="progressTop">
+                <span>Earned</span>
+                <span id="economyEarned">0</span>
+            </div>
+
+            <div class="progressTrack">
+                <div class="progressBar" id="economyBar"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!-- SETTINGS -->
+<section id="settings" class="section">
+
+    <div class="topbar">
+        <div>
+            <div class="pageTitle">Settings ⚙️</div>
+            <div class="pageSubtitle">Manage your LifeQuest data.</div>
+        </div>
+    </div>
+
+    <div class="panel">
+
+        <div class="panelHeader">
+            <div>
+                <div class="panelTitle">Data Management</div>
+                <div class="panelSub">Your data is stored locally in your browser.</div>
+            </div>
+        </div>
+
+        <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <button class="btn" onclick="exportData()">📤 Export Data</button>
+
+            <button class="btn" onclick="document.getElementById('importFile').click()">
+                📥 Import Data
+            </button>
+
+            <button class="btn danger" onclick="resetData()">
+                🗑️ Reset Everything
+            </button>
+
+            <input
+                id="importFile"
+                type="file"
+                accept=".json"
+                style="display:none"
+                onchange="importData(event)"
+            >
+        </div>
+
+        <div style="margin-top:25px;padding:15px;border:1px solid var(--border);border-radius:13px;color:var(--muted);font-size:13px;line-height:1.6;">
+            💡 <b style="color:white;">How it works:</b><br>
+            Schedule missions are worth 20 points each.
+            Side quests can have any reward you choose.
+            Shop purchases automatically subtract points from your balance.
+            Your data stays in this browser using localStorage.
+        </div>
+
+    </div>
+
+</section>
+
+</main>
+</div>
+
+<!-- MODAL -->
+<div class="modalBackdrop" id="modalBackdrop">
+
+    <div class="modal">
+
+        <div class="modalTitle" id="modalTitle">Create</div>
+
+        <div class="form" id="modalForm"></div>
+
+        <div class="modalActions">
+            <button class="btn" onclick="closeModal()">Cancel</button>
+            <button class="btn primary" id="modalSave">Save</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="toastContainer" id="toastContainer"></div>
+
+<script>
+
+/* =========================================================
+   DATA
+========================================================= */
+
+const STORAGE_KEY = "lifequest_advanced_v1";
+
+const defaultData = {
+
+    points: 0,
+
+    lifetimeEarned: 0,
+
+    lifetimeSpent: 0,
+
+    streak: 0,
+
+    lastCompletedDay: null,
+
+    totalTasksCompleted: 0,
+
+    totalPurchases: 0,
+
+    schedules: [
+
+        {
+            id: crypto.randomUUID(),
+            name: "Wake up",
+            time: "07:00",
+            reward: 20
+        },
+
+        {
+            id: crypto.randomUUID(),
+            name: "Study session",
+            time: "09:00",
+            reward: 20
+        },
+
+        {
+            id: crypto.randomUUID(),
+            name: "Exercise",
+            time: "17:00",
+            reward: 20
+        },
+
+        {
+            id: crypto.randomUUID(),
+            name: "Read / learn",
+            time: "20:00",
+            reward: 20
+        }
+
+    ],
+
+    shop: [
+
+        {
+            id: crypto.randomUUID(),
+            icon: "📱",
+            name: "Dopamine Scroll",
+            description: "Use some intentional screen time as a reward.",
+            price: 100
+        },
+
+        {
+            id: crypto.randomUUID(),
+            icon: "🎮",
+            name: "Gaming Session",
+            description: "A gaming session earned through completed work.",
+            price: 250
+        },
+
+        {
+            id: crypto.randomUUID(),
+            icon: "🍕",
+            name: "Favorite Snack",
+            description: "Enjoy a snack as a reward.",
+            price: 150
+        },
+
+        {
+            id: crypto.randomUUID(),
+            icon: "🎬",
+            name: "Movie Night",
+            description: "Relax with a movie.",
+            price: 500
+        }
+
+    ],
+
+    quests: [
+
+        {
+            id: crypto.randomUUID(),
+            icon: "💪",
+            name: "Quick Movement Quest",
+            description: "Complete a reasonable short exercise session.",
+            reward: 1
+        },
+
+        {
+            id: crypto.randomUUID(),
+            icon: "📚",
+            name: "Finish a Book",
+            description: "Read a book from beginning to end.",
+            reward: 10000
+        },
+
+        {
+            id: crypto.randomUUID(),
+            icon: "🧠",
+            name: "Deep Study",
+            description: "Complete one focused study block.",
+            reward: 100
+        }
+
+    ],
+
+    completedToday: {},
+
+    completedQuests: {},
+
+    purchaseHistory: []
+
+};
+
+let data = loadData();
+
+function loadData(){
+
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(!saved){
+
+        return structuredClone(defaultData);
+
+    }
+
+    try{
+
+        const parsed = JSON.parse(saved);
+
+        return {
+            ...structuredClone(defaultData),
+            ...parsed
+        };
+
+    }catch{
+
+        return structuredClone(defaultData);
+
+    }
+
+}
+
+function save(){
+
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(data));
+
+}
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function dateKey(date = new Date()){
+
+    const y = date.getFullYear();
+    const m = String(date.getMonth()+1).padStart(2,"0");
+    const d = String(date.getDate()).padStart(2,"0");
+
+    return `${y}-${m}-${d}`;
+
+}
+
+function yesterdayKey(){
+
+    const d = new Date();
+
+    d.setDate(d.getDate()-1);
+
+    return dateKey(d);
+
+}
+
+function resetDailyIfNeeded(){
+
+    const today = dateKey();
+
+    if(!data.completedToday[today]){
+
+        data.completedToday[today] = {};
+
+    }
+
+    save();
+
+}
+
+/* =========================================================
+   NAVIGATION
+========================================================= */
+
+function showSection(id,button){
+
+    document.querySelectorAll(".section").forEach(section=>{
+        section.classList.remove("active");
+    });
+
+    document.getElementById(id).classList.add("active");
+
+    document.querySelectorAll(".nav button").forEach(btn=>{
+        btn.classList.remove("active");
+    });
+
+    if(button){
+        button.classList.add("active");
+    }
+
+    renderAll();
+
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function renderAll(){
+
+    resetDailyIfNeeded();
+
+    renderDate();
+    renderPoints();
+    renderSchedules();
+    renderQuickShop();
+    renderShop();
+    renderQuests();
+    renderStats();
+
+}
+
+function renderDate(){
+
+    const now = new Date();
+
+    document.getElementById("currentDate").textContent =
+        now.toLocaleDateString(undefined,{
+            weekday:"long",
+            year:"numeric",
+            month:"long",
+            day:"numeric"
+        });
+
+}
+
+function renderPoints(){
+
+    document.getElementById("points").textContent = data.points.toLocaleString();
+
+    document.getElementById("sidePoints").textContent =
+        data.points.toLocaleString();
+
+    document.getElementById("shopBalance").textContent =
+        data.points.toLocaleString();
+
+    document.getElementById("streak").textContent =
+        data.streak;
+
+    document.getElementById("lifetime").textContent =
+        data.lifetimeEarned.toLocaleString();
+
+    const today = dateKey();
+
+    const completed = Object.keys(
+        data.completedToday[today] || {}
+    ).length;
+
+    const total = data.schedules.length;
+
+    const percent = total
+        ? Math.round((completed/total)*100)
+        : 0;
+
+    document.getElementById("progressText").textContent =
+        percent+"%";
+
+    document.getElementById("taskCount").textContent =
+        `${completed} / ${total} missions`;
+
+    document.getElementById("progressNumber").textContent =
+        `${completed} / ${total}`;
+
+    document.getElementById("dailyProgress").style.width =
+        percent+"%";
+
+}
+
+function renderSchedules(){
+
+    const containers = [
+        document.getElementById("dashboardTasks"),
+        document.getElementById("fullSchedule")
+    ];
+
+    const today = dateKey();
+
+    containers.forEach(container=>{
+
+        if(!container) return;
+
+        if(!data.schedules.length){
+
+            container.innerHTML =
+                `<div class="empty">
+                    No schedules yet. Create your first mission.
+                </div>`;
+
+            return;
+
+        }
+
+        const sorted = [...data.schedules].sort((a,b)=>
+            a.time.localeCompare(b.time)
+        );
+
+        container.innerHTML = sorted.map(task=>{
+
+            const completed =
+                !!data.completedToday[today]?.[task.id];
+
+            return `
+
+                <div class="task ${completed ? "completed":""}">
+
+                    <button
+                        class="check"
+                        onclick="completeTask('${task.id}')"
+                        ${completed ? "disabled":""}
+                    >
+                        ${completed ? "✓":""}
+                    </button>
+
+                    <div class="taskInfo">
+
+                        <div class="taskName">
+                            ${escapeHTML(task.name)}
+                        </div>
+
+                        <div class="taskTime">
+                            ⏰ ${escapeHTML(task.time)}
+                        </div>
+
+                    </div>
+
+                    <div class="reward">
+                        +${task.reward} ⭐
+                    </div>
+
+                    <div class="taskActions">
+
+                        <button
+                            class="btn small"
+                            onclick="editSchedule('${task.id}')"
+                        >
+                            ✏️
+                        </button>
+
+                        <button
+                            class="btn small danger"
+                            onclick="deleteSchedule('${task.id}')"
+                        >
+                            ×
+                        </button>
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+
+    });
+
+    renderPoints();
+
+}
+
+/* =========================================================
+   COMPLETE TASK
+========================================================= */
+
+function completeTask(id){
+
+    const today = dateKey();
+
+    if(data.completedToday[today]?.[id]){
+
+        showToast(
+            "Already completed",
+            "This mission has already been claimed today."
+        );
+
+        return;
+
+    }
+
+    const task = data.schedules.find(x=>x.id===id);
+
+    if(!task) return;
+
+    if(!data.completedToday[today]){
+
+        data.completedToday[today] = {};
+
+    }
+
+    data.completedToday[today][id] = true;
+
+    data.points += task.reward;
+
+    data.lifetimeEarned += task.reward;
+
+    data.totalTasksCompleted++;
+
+    updateStreak();
+
+    save();
+
+    showToast(
+        "Mission complete! 🎉",
+        `+${task.reward} points added to your balance.`
+    );
+
+    renderAll();
+
+}
+
+function updateStreak(){
+
+    const today = dateKey();
+
+    if(data.lastCompletedDay === today){
+
+        return;
+
+    }
+
+    if(data.lastCompletedDay === yesterdayKey()){
+
+        data.streak++;
+
+    }else{
+
+        data.streak = 1;
+
+    }
+
+    data.lastCompletedDay = today;
+
+}
+
+/* =========================================================
+   SCHEDULE MODAL
+========================================================= */
+
+let modalMode = null;
+let editingId = null;
+
+function openScheduleModal(id=null){
+
+    modalMode = "schedule";
+    editingId = id;
+
+    const task = id
+        ? data.schedules.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        id ? "Edit Schedule":"Create Schedule";
+
+    document.getElementById("modalForm").innerHTML = `
+
+        <div class="field">
+            <label>Schedule name</label>
+            <input
+                id="formName"
+                value="${task ? escapeAttribute(task.name):""}"
+                placeholder="Example: Homework"
+            >
+        </div>
+
+        <div class="field">
+            <label>Time</label>
+            <input
+                id="formTime"
+                type="time"
+                value="${task ? task.time:"08:00"}"
+            >
+        </div>
+
+        <div class="field">
+            <label>Point reward</label>
+            <input
+                id="formReward"
+                type="number"
+                min="1"
+                value="${task ? task.reward:20}"
+            >
+        </div>
+
+    `;
+
+    document.getElementById("modalSave").onclick =
+        saveSchedule;
+
+    openModal();
+
+}
+
+function saveSchedule(){
+
+    const name = document.getElementById("formName").value.trim();
+    const time = document.getElementById("formTime").value;
+    const reward = Number(document.getElementById("formReward").value);
+
+    if(!name || !time || reward<=0){
+
+        showToast(
+            "Invalid schedule",
+            "Please fill in all fields correctly."
+        );
+
+        return;
+
+    }
+
+    if(editingId){
+
+        const task = data.schedules.find(x=>x.id===editingId);
+
+        if(task){
+
+            task.name = name;
+            task.time = time;
+            task.reward = reward;
+
+        }
+
+    }else{
+
+        data.schedules.push({
+
+            id:crypto.randomUUID(),
+            name,
+            time,
+            reward
+
+        });
+
+    }
+
+    save();
+    closeModal();
+    renderAll();
+
+    showToast(
+        "Schedule saved",
+        "Your daily mission has been updated."
+    );
+
+}
+
+function editSchedule(id){
+
+    openScheduleModal(id);
+
+}
+
+function deleteSchedule(id){
+
+    const task = data.schedules.find(x=>x.id===id);
+
+    if(!task) return;
+
+    if(!confirm(`Delete "${task.name}"?`)) return;
+
+    data.schedules =
+        data.schedules.filter(x=>x.id!==id);
+
+    save();
+    renderAll();
+
+    showToast(
+        "Schedule deleted",
+        "The mission has been removed."
+    );
+
+}
+
+/* =========================================================
+   SHOP
+========================================================= */
+
+function renderQuickShop(){
+
+    const container = document.getElementById("quickShop");
+
+    if(!data.shop.length){
+
+        container.innerHTML =
+            `<div class="empty">No rewards yet.</div>`;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        data.shop.slice(0,3).map(item=>`
+
+            <div class="shopItem" style="margin-bottom:10px;">
+
+                <div class="shopIcon">${escapeHTML(item.icon)}</div>
+
+                <div class="shopName">
+                    ${escapeHTML(item.name)}
+                </div>
+
+                <div class="shopBottom" style="margin-top:10px;">
+
+                    <span class="price">
+                        ${item.price.toLocaleString()} ⭐
+                    </span>
+
+                    <button
+                        class="buy"
+                        onclick="buyReward('${item.id}')"
+                        ${data.points < item.price ? "disabled":""}
+                    >
+                        Buy
+                    </button>
+
+                </div>
+
+            </div>
+
+        `).join("");
+
+}
+
+function renderShop(){
+
+    const container = document.getElementById("shopGrid");
+
+    if(!data.shop.length){
+
+        container.innerHTML =
+            `<div class="empty">Create your first reward.</div>`;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        data.shop.map(item=>`
+
+        <div class="shopItem">
+
+            <div class="shopIcon">
+                ${escapeHTML(item.icon)}
+            </div>
+
+            <div class="shopName">
+                ${escapeHTML(item.name)}
+            </div>
+
+            <div class="shopDescription">
+                ${escapeHTML(item.description)}
+            </div>
+
+            <div class="shopBottom">
+
+                <span class="price">
+                    ${item.price.toLocaleString()} ⭐
+                </span>
+
+                <div style="display:flex;gap:6px;">
+
+                    <button
+                        class="btn small"
+                        onclick="editShop('${item.id}')"
+                    >
+                        ✏️
+                    </button>
+
+                    <button
+                        class="btn small danger"
+                        onclick="deleteShop('${item.id}')"
+                    >
+                        ×
+                    </button>
+
+                    <button
+                        class="buy"
+                        onclick="buyReward('${item.id}')"
+                        ${data.points < item.price ? "disabled":""}
+                    >
+                        Buy
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `).join("");
+
+}
+
+function buyReward(id){
+
+    const item = data.shop.find(x=>x.id===id);
+
+    if(!item) return;
+
+    if(data.points < item.price){
+
+        showToast(
+            "Not enough points",
+            `You need ${(item.price-data.points).toLocaleString()} more points.`
+        );
+
+        return;
+
+    }
+
+    data.points -= item.price;
+
+    data.lifetimeSpent += item.price;
+
+    data.totalPurchases++;
+
+    data.purchaseHistory.push({
+
+        id:crypto.randomUUID(),
+        item:item.name,
+        price:item.price,
+        date:new Date().toISOString()
+
+    });
+
+    save();
+
+    showToast(
+        "Reward purchased 🛒",
+        `${item.name} cost ${item.price.toLocaleString()} points.`
+    );
+
+    renderAll();
+
+}
+
+function openShopModal(id=null){
+
+    modalMode = "shop";
+    editingId = id;
+
+    const item = id
+        ? data.shop.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        id ? "Edit Reward":"Create Reward";
+
+    document.getElementById("modalForm").innerHTML = `
+
+        <div class="field">
+            <label>Icon</label>
+            <input
+                id="formIcon"
+                value="${item ? escapeAttribute(item.icon):"🎁"}"
+                placeholder="🎮"
+            >
+        </div>
+
+        <div class="field">
+            <label>Reward name</label>
+            <input
+                id="formName"
+                value="${item ? escapeAttribute(item.name):""}"
+                placeholder="Gaming Session"
+            >
+        </div>
+
+        <div class="field">
+            <label>Description</label>
+            <input
+                id="formDescription"
+                value="${item ? escapeAttribute(item.description):""}"
+                placeholder="Something you want to earn"
+            >
+        </div>
+
+        <div class="field">
+            <label>Price</label>
+            <input
+                id="formPrice"
+                type="number"
+                min="1"
+                value="${item ? item.price:100}"
+            >
+        </div>
+
+    `;
+
+    document.getElementById("modalSave").onclick =
+        saveShop;
+
+    openModal();
+
+}
+
+function saveShop(){
+
+    const icon =
+        document.getElementById("formIcon").value.trim() || "🎁";
+
+    const name =
+        document.getElementById("formName").value.trim();
+
+    const description =
+        document.getElementById("formDescription").value.trim();
+
+    const price =
+        Number(document.getElementById("formPrice").value);
+
+    if(!name || !price || price<=0){
+
+        showToast(
+            "Invalid reward",
+            "Enter a name and valid price."
+        );
+
+        return;
+
+    }
+
+    if(editingId){
+
+        const item = data.shop.find(x=>x.id===editingId);
+
+        if(item){
+
+            item.icon = icon;
+            item.name = name;
+            item.description = description;
+            item.price = price;
+
+        }
+
+    }else{
+
+        data.shop.push({
+
+            id:crypto.randomUUID(),
+            icon,
+            name,
+            description,
+            price
+
+        });
+
+    }
+
+    save();
+    closeModal();
+    renderAll();
+
+}
+
+function editShop(id){
+
+    openShopModal(id);
+
+}
+
+function deleteShop(id){
+
+    if(!confirm("Delete this reward?")) return;
+
+    data.shop =
+        data.shop.filter(x=>x.id!==id);
+
+    save();
+    renderAll();
+
+}
+
+/* =========================================================
+   QUESTS
+========================================================= */
+
+function renderQuests(){
+
+    const container =
+        document.getElementById("questList");
+
+    if(!data.quests.length){
+
+        container.innerHTML =
+            `<div class="empty">
+                No side quests yet.
+            </div>`;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        data.quests.map(q=>{
+
+            const completed =
+                !!data.completedQuests[q.id];
+
+            return `
+
+                <div class="quest">
+
+                    <div class="questTop">
+
+                        <div class="questIcon">
+                            ${escapeHTML(q.icon)}
+                        </div>
+
+                        <div style="flex:1;">
+
+                            <div class="questName">
+                                ${escapeHTML(q.name)}
+                            </div>
+
+                            <div style="font-size:12px;color:var(--yellow);margin-top:2px;">
+                                +${q.reward.toLocaleString()} ⭐
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="questDescription">
+                        ${escapeHTML(q.description)}
+                    </div>
+
+                    <div class="questBottom">
+
+                        <div class="questReward">
+                            ${completed ? "✓ Completed":"Reward available"}
+                        </div>
+
+                        <div style="display:flex;gap:6px;">
+
+                            <button
+                                class="btn small"
+                                onclick="editQuest('${q.id}')"
+                            >
+                                ✏️
+                            </button>
+
+                            <button
+                                class="btn small danger"
+                                onclick="deleteQuest('${q.id}')"
+                            >
+                                ×
+                            </button>
+
+                            <button
+                                class="btn ${completed ? "green":"primary"} small"
+                                onclick="completeQuest('${q.id}')"
+                                ${completed ? "disabled":""}
+                            >
+                                ${completed ? "Claimed ✓":"Complete"}
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+
+}
+
+function completeQuest(id){
+
+    if(data.completedQuests[id]){
+
+        showToast(
+            "Already completed",
+            "This side quest has already been claimed."
+        );
+
+        return;
+
+    }
+
+    const quest =
+        data.quests.find(x=>x.id===id);
+
+    if(!quest) return;
+
+    data.completedQuests[id] = true;
+
+    data.points += quest.reward;
+
+    data.lifetimeEarned += quest.reward;
+
+    save();
+
+    showToast(
+        "Side quest complete ⚔️",
+        `+${quest.reward.toLocaleString()} points!`
+    );
+
+    renderAll();
+
+}
+
+function openQuestModal(id=null){
+
+    modalMode = "quest";
+    editingId = id;
+
+    const quest = id
+        ? data.quests.find(x=>x.id===id)
+        : null;
+
+    document.getElementById("modalTitle").textContent =
+        id ? "Edit Side Quest":"Create Side Quest";
+
+    document.getElementById("modalForm").innerHTML = `
+
+        <div class="field">
+            <label>Icon</label>
+            <input
+                id="formIcon"
+                value="${quest ? escapeAttribute(quest.icon):"⚔️"}"
+            >
+        </div>
+
+        <div class="field">
+            <label>Quest name</label>
+            <input
+                id="formName"
+                value="${quest ? escapeAttribute(quest.name):""}"
+                placeholder="Finish a project"
+            >
+        </div>
+
+        <div class="field">
+            <label>Description</label>
+            <input
+                id="formDescription"
+                value="${quest ? escapeAttribute(quest.description):""}"
+                placeholder="What needs to be done?"
+            >
+        </div>
+
+        <div class="field">
+            <label>Point reward</label>
+            <input
+                id="formReward"
+                type="number"
+                min="1"
+                value="${quest ? quest.reward:100}"
+            >
+        </div>
+
+    `;
+
+    document.getElementById("modalSave").onclick =
+        saveQuest;
+
+    openModal();
+
+}
+
+function saveQuest(){
+
+    const icon =
+        document.getElementById("formIcon").value.trim() || "⚔️";
+
+    const name =
+        document.getElementById("formName").value.trim();
+
+    const description =
+        document.getElementById("formDescription").value.trim();
+
+    const reward =
+        Number(document.getElementById("formReward").value);
+
+    if(!name || !reward || reward<=0){
+
+        showToast(
+            "Invalid quest",
+            "Enter a name and valid reward."
+        );
+
+        return;
+
+    }
+
+    if(editingId){
+
+        const q =
+            data.quests.find(x=>x.id===editingId);
+
+        if(q){
+
+            q.icon = icon;
+            q.name = name;
+            q.description = description;
+            q.reward = reward;
+
+        }
+
+    }else{
+
+        data.quests.push({
+
+            id:crypto.randomUUID(),
+            icon,
+            name,
+            description,
+            reward
+
+        });
+
+    }
+
+    save();
+    closeModal();
+    renderAll();
+
+}
+
+function editQuest(id){
+
+    openQuestModal(id);
+
+}
+
+function deleteQuest(id){
+
+    if(!confirm("Delete this side quest?")) return;
+
+    data.quests =
+        data.quests.filter(x=>x.id!==id);
+
+    delete data.completedQuests[id];
+
+    save();
+    renderAll();
+
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function renderStats(){
+
+    document.getElementById("statsEarned").textContent =
+        data.lifetimeEarned.toLocaleString();
+
+    document.getElementById("statsSpent").textContent =
+        data.lifetimeSpent.toLocaleString();
+
+    document.getElementById("statsTasks").textContent =
+        data.totalTasksCompleted.toLocaleString();
+
+    document.getElementById("statsPurchases").textContent =
+        data.totalPurchases.toLocaleString();
+
+    document.getElementById("economyEarned").textContent =
+        data.lifetimeEarned.toLocaleString();
+
+    const total =
+        data.lifetimeEarned + data.lifetimeSpent;
+
+    const earnedPercent =
+        total ? (data.lifetimeEarned/total)*100 : 0;
+
+    document.getElementById("economyBar").style.width =
+        earnedPercent+"%";
+
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+function openModal(){
+
+    document
+        .getElementById("modalBackdrop")
+        .classList.add("show");
+
+}
+
+function closeModal(){
+
+    document
+        .getElementById("modalBackdrop")
+        .classList.remove("show");
+
+    modalMode = null;
+    editingId = null;
+
+}
+
+document
+    .getElementById("modalBackdrop")
+    .addEventListener("click",function(e){
+
+        if(e.target===this){
+
+            closeModal();
+
+        }
+
+    });
+
+document.addEventListener("keydown",function(e){
+
+    if(e.key==="Escape"){
+
+        closeModal();
+
+    }
+
+});
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function showToast(title,text){
+
+    const container =
+        document.getElementById("toastContainer");
+
+    const toast =
+        document.createElement("div");
+
+    toast.className = "toast";
+
+    toast.innerHTML = `
+
+        <div class="toastTitle">
+            ${escapeHTML(title)}
+        </div>
+
+        <div class="toastText">
+            ${escapeHTML(text)}
+        </div>
+
+    `;
+
+    container.appendChild(toast);
+
+    setTimeout(()=>{
+
+        toast.style.opacity="0";
+        toast.style.transform="translateY(10px)";
+
+        setTimeout(()=>{
+            toast.remove();
+        },300);
+
+    },3000);
+
+}
+
+/* =========================================================
+   EXPORT / IMPORT
+========================================================= */
+
+function exportData(){
+
+    const blob =
+        new Blob(
+            [JSON.stringify(data,null,2)],
+            {type:"application/json"}
+        );
+
+    const url =
+        URL.createObjectURL(blob);
+
+    const a =
+        document.createElement("a");
+
+    a.href = url;
+    a.download = "lifequest-backup.json";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    showToast(
+        "Data exported",
+        "Your backup file has been created."
+    );
+
+}
+
+function importData(event){
+
+    const file =
+        event.target.files[0];
+
+    if(!file) return;
+
+    const reader =
+        new FileReader();
+
+    reader.onload = function(){
+
+        try{
+
+            const imported =
+                JSON.parse(reader.result);
+
+            if(
+                typeof imported.points !== "number" ||
+                !Array.isArray(imported.schedules)
+            ){
+
+                throw new Error();
+
+            }
+
+            data = {
+                ...structuredClone(defaultData),
+                ...imported
+            };
+
+            save();
+            renderAll();
+
+            showToast(
+                "Import successful",
+                "Your LifeQuest data has been restored."
+            );
+
+        }catch{
+
+            showToast(
+                "Import failed",
+                "That file does not contain valid LifeQuest data."
+            );
+
+        }
+
+    };
+
+    reader.readAsText(file);
+
+}
+
+function resetData(){
+
+    if(!confirm(
+        "This will permanently erase your schedules, points, quests and history. Continue?"
+    )) return;
+
+    data = structuredClone(defaultData);
+
+    save();
+    renderAll();
+
+    showToast(
+        "System reset",
+        "LifeQuest has been reset to its default state."
+    );
+
+}
+
+/* =========================================================
+   SECURITY / HTML HELPERS
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value)
+        .replaceAll("&","&amp;")
+        .replaceAll("<","&lt;")
+        .replaceAll(">","&gt;")
+        .replaceAll('"',"&quot;")
+        .replaceAll("'","&#039;");
+
+}
+
+function escapeAttribute(value){
+
+    return escapeHTML(value);
+
+}
+
+/* =========================================================
+   AUTOMATIC DAILY HOUSEKEEPING
+========================================================= */
+
+function cleanupOldDailyData(){
+
+    const today = dateKey();
+
+    const keys =
+        Object.keys(data.completedToday);
+
+    keys.forEach(key=>{
+
+        if(key!==today){
+
+            delete data.completedToday[key];
+
+        }
+
+    });
+
+    save();
+
+}
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+cleanupOldDailyData();
+renderAll();
+
+/* Update date display periodically */
+setInterval(()=>{
+
+    renderDate();
+
+},60000);
+
+</script>
+
+</body>
+</html>
+```
